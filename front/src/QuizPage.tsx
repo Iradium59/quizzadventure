@@ -57,7 +57,7 @@ const QuizPage: React.FC = () => {
         }
     };
 
-    const handleAnswerSelection = (answerId: number) => {
+    const handleAnswerSelection = async (answerId: number) => {
         setSelectedAnswer(answerId);
         const isCorrectAnswer = answers.find(answer => answer.id === answerId)?.isCorrect;
         setIsCorrect(isCorrectAnswer ?? false);
@@ -66,28 +66,27 @@ const QuizPage: React.FC = () => {
             newStatus[currentQuestionIndex] = isCorrectAnswer ?? false;
             return newStatus;
         });
-
+ 
         if (isCorrectAnswer) {
             setScore(prevScore => prevScore + 1);
         }
-
-        setTimeout(() => {
-            handleNextQuestion();
-        }, 1000);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+ 
+        await handleNextQuestion();
     };
-
-    const handleNextQuestion = () => {
+ 
+    const handleNextQuestion = async () => {
         if (currentQuestionIndex < questions.length - 1) {
             const nextQuestionIndex = currentQuestionIndex + 1;
             setCurrentQuestionIndex(nextQuestionIndex);
-            fetchAnswers(questions[nextQuestionIndex].id);
+            await fetchAnswers(questions[nextQuestionIndex].id);
             setSelectedAnswer(null);
             setIsCorrect(null);
         } else {
-            saveHistoryAndRedirect();
+            await saveHistoryAndRedirect();
         }
     };
-
+ 
     const saveHistoryAndRedirect = async () => {
         try {
             await fetchBack('history', 'POST', {
@@ -105,10 +104,13 @@ const QuizPage: React.FC = () => {
                     totalQuestions: questions.length
                 }
             });
+
         } catch (error) {
             setError('Failed to save history');
             console.error(error);
         }
+
+
     };
 
     const currentQuestion = questions[currentQuestionIndex];
