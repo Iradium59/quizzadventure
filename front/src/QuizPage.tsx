@@ -15,8 +15,7 @@ const QuizPage: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const state = location.state as QuizPageState;
-    const { username, selectedCategory, numberOfQuestions } = state;
-
+    const { username, category, numberOfQuestions } = state;
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [answers, setAnswers] = useState<Answer[]>([]);
@@ -27,12 +26,13 @@ const QuizPage: React.FC = () => {
     const [score, setScore] = useState<number>(0);
 
     useEffect(() => {
+
         const fetchQuestions = async () => {
             try {
-                const category = selectedCategory ?? 0;
-                const questionsData = category === 0
+                const selectedCategory = category ?? 0;
+                const questionsData = selectedCategory === 0
                     ? await fetchBack<Question[]>(`questions/limit/${numberOfQuestions}`, 'GET')
-                    : await fetchBack<Question[]>(`questions/category/${category}/limit/${numberOfQuestions}`, 'GET');
+                    : await fetchBack<Question[]>(`questions/category/${selectedCategory}/limit/${numberOfQuestions}`, 'GET');
 
                 setQuestions(questionsData);
                 setCurrentQuestionIndex(0);
@@ -45,7 +45,7 @@ const QuizPage: React.FC = () => {
         };
 
         fetchQuestions();
-    }, [numberOfQuestions, selectedCategory]);
+    }, [numberOfQuestions, category]);
 
     const fetchAnswers = async (questionId: number) => {
         try {

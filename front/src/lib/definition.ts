@@ -34,7 +34,7 @@ export interface Answer {
 
 export interface QuizPageState {
     username: string;
-    selectedCategory: number | null;
+    category: number | null;
     numberOfQuestions: number;
 }
 

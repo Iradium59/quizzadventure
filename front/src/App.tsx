@@ -11,7 +11,7 @@ function App() {
     const [debouncedUsername, setDebouncedUsername] = useState<string>('');
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
     const [categorieList, setCategorieList] = useState<CategorieProps[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<number>(0);
     const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5);
 
     const navigate = useNavigate();
@@ -75,7 +75,7 @@ function App() {
             setError('Username is required');
             return;
         }
-
+        
         navigate('/quiz', {
             state: {
                 username,
