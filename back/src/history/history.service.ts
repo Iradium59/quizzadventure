@@ -4,7 +4,7 @@ import History from "database/models/history.model";
 
 @Injectable()
 export class HistoryService {
-    constructor(@InjectModel(History) private readonly historyModel: typeof History) {}
+    constructor(@InjectModel(History) private readonly historyModel: typeof History) { }
 
     async FindAll(): Promise<History[]> {
         return this.historyModel.findAll();
@@ -19,19 +19,29 @@ export class HistoryService {
     }
 
     async findByUser(name: string): Promise<History[]> {
-        return this.historyModel.findAll({where: {user: name}});
+        return this.historyModel.findAll({ where: { user: name } });
     }
 
-    async findEndingByUser(name: string): Promise<History> {
-        return this.historyModel.findOne({where: {user: name, state: 'ENDING'}});
+    async findEndingByUser(name: string): Promise<History[]> {
+        try {
+            return await this.historyModel.findAll({
+                where: {
+                    user: name,
+                    state: 'ENDING'
+                }
+            });
+        } catch (error) {
+            console.error('Error finding ending by user:', error);
+            throw new Error('Error finding ending by user');
+        }
     }
 
     async findLastByUser(name: string): Promise<History> {
-        return this.historyModel.findOne({where: {user: name}, order: [['createdAt', 'DESC']]});
+        return this.historyModel.findOne({ where: { user: name }, order: [['createdAt', 'DESC']] });
     }
 
     async FindEnding(): Promise<History[]> {
-        return this.historyModel.findAll({where: {state: 'ENDING'}});
+        return this.historyModel.findAll({ where: { state: 'ENDING' } });
     }
 
 }

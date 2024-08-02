@@ -22,7 +22,7 @@ export class HistoryController {
     }
 
     @Get('ending/user/:name')
-    getEndingHistoryByUser(@Param('name') name: string): Promise<History> {
+    getEndingHistoryByUser(@Param('name') name: string): Promise<History[]> {
         return this.historyService.findEndingByUser(name);
     }
 }

@@ -41,5 +41,11 @@ export default class History extends Model {
         allowNull: false,
     })
     state: string;
+
+    @Column({
+        type: DataType.JSON,
+        allowNull: true,
+    })
+    questions_data: any; 
 }
 
