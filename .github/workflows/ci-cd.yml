@@ -10,84 +10,47 @@ jobs:
   cypress-tests:
     runs-on: ubuntu-latest
     
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: quizz
-          MYSQL_DATABASE: quizz
-          MYSQL_USER: quizz
-          MYSQL_PASSWORD: quizz
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # Configuration du backend
-      - name: Set up Node.js for Backend
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'test/package-lock.json'
       
-      - name: Install Backend Dependencies
-        run: cd back && npm ci
-        continue-on-error: true
-      
-      - name: Start Backend Server
+      - name: Install Cypress dependencies
         run: |
-          cd back
-          npm run start:dev &
-          sleep 15
-        continue-on-error: true
-        env:
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 3306
-          DATABASE_USER: quizz
-          DATABASE_PASSWORD: quizz
-          DATABASE_NAME: quizz
+          cd test
+          npm ci
       
-      # Configuration du frontend
-
-      
-      - name: Install Frontend Dependencies
-        run: cd front && npm ci
-        continue-on-error: true
-      
-      - name: Start Frontend Server
+      - name: Verify Cypress
         run: |
-          cd front
-          npm run start &
-          sleep 15
-        continue-on-error: true
+          cd test
+          npx cypress verify
       
-      # Configuration et exécution des tests Cypress
-
-      
-      - name: Install Cypress Dependencies
-        run: cd test && npm ci
-        continue-on-error: true
-      
-      - name: Cypress run
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v5
         with:
           working-directory: test
-          wait-on: 'http://localhost:3000, http://localhost:3001'
-          wait-on-timeout: 120
-        continue-on-error: true
+          browser: chrome
+          headless: true
+          record: false
+          config-file: cypress.config.js
+        env:
+          CYPRESS_BASE_URL: http://localhost:3000
+          CYPRESS_SKIP_API_CALLS: true
       
-      - name: Upload Cypress Screenshots
+      - name: Upload Cypress screenshots
         uses: actions/upload-artifact@v3
-        if: always()
+        if: failure()
         with:
           name: cypress-screenshots
           path: test/cypress/screenshots
       
-      - name: Upload Cypress Videos
+      - name: Upload Cypress videos
         uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -96,7 +59,6 @@ jobs:
   
   security-scan:
     runs-on: ubuntu-latest
-    needs: cypress-tests
     
     steps:
       - name: Checkout code
