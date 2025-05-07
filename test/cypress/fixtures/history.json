@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "user": "testUser",
+    "score": 3,
+    "answered_question_count": 5,
+    "questions": 5,
+    "state": "ENDING",
+    "createdAt": "2025-05-01T10:30:00.000Z",
+    "updatedAt": "2025-05-01T10:35:00.000Z"
+  },
+  {
+    "id": 2,
+    "user": "testUser",
+    "score": 4,
+    "answered_question_count": 5,
+    "questions": 5,
+    "state": "ENDING",
+    "createdAt": "2025-05-02T14:20:00.000Z",
+    "updatedAt": "2025-05-02T14:25:00.000Z"
+  },
+  {
+    "id": 3,
+    "user": "testUser",
+    "score": 5,
+    "answered_question_count": 5,
+    "questions": 5,
+    "state": "ENDING",
+    "createdAt": "2025-05-03T16:45:00.000Z",
+    "updatedAt": "2025-05-03T16:50:00.000Z"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "question": "Quelle est la capitale de la France?",
+    "category": 2
+  },
+  {
+    "id": 2,
+    "question": "En quelle année a eu lieu la Révolution française?",
+    "category": 1
+  },
+  {
+    "id": 3,
+    "question": "Qui a peint la Joconde?",
+    "category": 4
+  },
+  {
+    "id": 4,
+    "question": "Quel est le plus grand océan du monde?",
+    "category": 2
+  },
+  {
+    "id": 5,
+    "question": "Quelle est la formule chimique de l'eau?",
+    "category": 3
+  }
+]

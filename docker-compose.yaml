@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  quizz-db:
+    image: mysql:8.0
+    container_name: quizz-db
+    environment:
+      MYSQL_ROOT_PASSWORD: quizz
+      MYSQL_DATABASE: quizz
+      MYSQL_USER: quizz
+      MYSQL_PASSWORD: quizz
+    ports:
+      - "3306:3306"
+    volumes:
+      - quizz_mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+volumes:
+  quizz_mysql_data:
+  
+networks:
+  app_network:

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "answer": "Paris",
+    "isCorrect": true,
+    "questionId": 1
+  },
+  {
+    "id": 2,
+    "answer": "Lyon",
+    "isCorrect": false,
+    "questionId": 1
+  },
+  {
+    "id": 3,
+    "answer": "Marseille",
+    "isCorrect": false,
+    "questionId": 1
+  },
+  {
+    "id": 4,
+    "answer": "Bordeaux",
+    "isCorrect": false,
+    "questionId": 1
+  }
+]

@@ -1,0 +1,133 @@
+name: CI/CD QuizzAdventure
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  cypress-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: quizz
+          MYSQL_DATABASE: quizz
+          MYSQL_USER: quizz
+          MYSQL_PASSWORD: quizz
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Configuration du backend
+      - name: Set up Node.js for Backend
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'back/package-lock.json'
+      
+      - name: Install Backend Dependencies
+        run: cd back && npm install
+      
+      - name: Start Backend Server
+        run: |
+          cd back
+          npm run start:dev &
+          sleep 10
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 3306
+          DATABASE_USER: quizz
+          DATABASE_PASSWORD: quizz
+          DATABASE_NAME: quizz
+      
+      # Configuration du frontend
+      - name: Set up Node.js for Frontend
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
+      
+      - name: Install Frontend Dependencies
+        run: cd front && npm install
+      
+      - name: Start Frontend Server
+        run: |
+          cd front
+          npm run start &
+          sleep 10
+      
+      # Configuration et exécution des tests Cypress
+      - name: Set up Node.js for Cypress
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'test/package-lock.json'
+      
+      - name: Install Cypress Dependencies
+        run: cd test && npm install
+      
+      - name: Run Cypress Tests
+        run: |
+          cd test
+          npx cypress run
+      
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: test/cypress/screenshots
+      
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: test/cypress/videos
+  
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Run Trivy vulnerability scanner for Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './back'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Run Trivy vulnerability scanner for Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './front'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Run Trivy vulnerability scanner for Docker images
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
